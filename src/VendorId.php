@@ -1,6 +1,6 @@
 <?php
 
-namespace Dapphp\Radius;
+namespace Seed4Me\RadiusClient;
 
 /**
  * RADIUS vendor ID assignments.  Thanks to FreeRADIUS for these assignments

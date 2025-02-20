@@ -6,7 +6,7 @@
 
 ## Name:
 
-**Dapphp\Radius** - A pure PHP RADIUS client based on the SysCo/al implementation
+**Seed4Me\RadiusClient** - A pure PHP RADIUS client based on the SysCo/al implementation
 
 ## Author:
 
@@ -15,7 +15,7 @@
 
 ## Description:
 
-**Dapphp\Radius** is a pure PHP RADIUS client for authenticating users against
+**Seed4Me\RadiusClient** is a pure PHP RADIUS client for authenticating users against
 a RADIUS server in PHP.  It currently supports basic RADIUS auth using PAP,
 CHAP (MD5), MSCHAP v1, and EAP-MSCHAP v2.  The current 2.5.x branch is tested
 to work with the following RADIUS servers:
@@ -71,7 +71,7 @@ Example:
 
 	<?php
 
-	use Dapphp\Radius\Radius;
+	use Seed4Me\RadiusClient\Radius;
 
 	require_once '/path/to/radius/autoload.php';
 	// or, if using composer
@@ -128,8 +128,8 @@ Example:
 
 
 	// Setting vendor specific attributes
-	// Many vendor IDs are available in \Dapphp\Radius\VendorId
-	// e.g. \Dapphp\Radius\VendorId::MICROSOFT
+	// Many vendor IDs are available in \Seed4Me\RadiusClient\VendorId
+	// e.g. \Seed4Me\RadiusClient\VendorId::MICROSOFT
 	$client->setVendorSpecificAttribute($vendorId, $attributeNumber, $rawValue);
 
 	// Retrieving attributes from RADIUS responses after receiving a failure or success response

@@ -17,7 +17,7 @@ $pass   = (getenv('RADIUS_PASS'))        ?: 'arctangent';
 $secret = (getenv('RADIUS_SECRET'))      ?: 'xyzzy5461';
 $debug  = in_array('-v', $_SERVER['argv']);
 
-$radius = new \Dapphp\Radius\Radius();
+$radius = new \Seed4Me\RadiusClient\Radius();
 $radius->setServer($server)     // IP or hostname of RADIUS server
        ->setSecret($secret)        // RADIUS shared secret
        ->setNasIpAddress('127.0.0.1')  // IP or hostname of NAS (device authenticating user)

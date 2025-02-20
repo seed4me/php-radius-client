@@ -61,7 +61,7 @@
  * @link drew@drew-phillips.com
  */
 
-namespace Dapphp\Radius;
+namespace Seed4Me\RadiusClient;
 
 /**
  * A pure PHP RADIUS client implementation.
@@ -188,64 +188,64 @@ class Radius
                                 $authenticationPort = 1812,
                                 $accountingPort     = 1813)
     {
-        $this->radiusPackets      = array();
-        $this->radiusPackets[1]   = 'Access-Request';
-        $this->radiusPackets[2]   = 'Access-Accept';
-        $this->radiusPackets[3]   = 'Access-Reject';
-        $this->radiusPackets[4]   = 'Accounting-Request';
-        $this->radiusPackets[5]   = 'Accounting-Response';
-        $this->radiusPackets[11]  = 'Access-Challenge';
-        $this->radiusPackets[12]  = 'Status-Server (experimental)';
-        $this->radiusPackets[13]  = 'Status-Client (experimental)';
-        $this->radiusPackets[255] = 'Reserved';
+        $this->radiusPackets      = [];
+        $this->radiusPackets[RadiusPackets::ACCESS_REQUEST]   = 'Access-Request';
+        $this->radiusPackets[RadiusPackets::ACCESS_ACCEPT]   = 'Access-Accept';
+        $this->radiusPackets[RadiusPackets::ACCESS_REJECT]   = 'Access-Reject';
+        $this->radiusPackets[RadiusPackets::ACCOUNTING_REQUEST]   = 'Accounting-Request';
+        $this->radiusPackets[RadiusPackets::ACCOUNTING_RESPONSE]   = 'Accounting-Response';
+        $this->radiusPackets[RadiusPackets::ACCESS_CHALLENGE]  = 'Access-Challenge';
+        $this->radiusPackets[RadiusPackets::STATUS_SERVER]  = 'Status-Server (experimental)';
+        $this->radiusPackets[RadiusPackets::STATUS_CLIENT]  = 'Status-Client (experimental)';
+        $this->radiusPackets[RadiusPackets::RESERVED] = 'Reserved';
 
-        $this->attributesInfo     = array();
-        $this->attributesInfo[1]  = array('User-Name', 'S');
-        $this->attributesInfo[2]  = array('User-Password', 'S');
-        $this->attributesInfo[3]  = array('CHAP-Password', 'S'); // Type (1) / Length (1) / CHAP Ident (1) / String
-        $this->attributesInfo[4]  = array('NAS-IP-Address', 'A');
-        $this->attributesInfo[5]  = array('NAS-Port', 'I');
-        $this->attributesInfo[6]  = array('Service-Type', 'I');
-        $this->attributesInfo[7]  = array('Framed-Protocol', 'I');
-        $this->attributesInfo[8]  = array('Framed-IP-Address', 'A');
-        $this->attributesInfo[9]  = array('Framed-IP-Netmask', 'A');
-        $this->attributesInfo[10] = array('Framed-Routing', 'I');
-        $this->attributesInfo[11] = array('Filter-Id', 'T');
-        $this->attributesInfo[12] = array('Framed-MTU', 'I');
-        $this->attributesInfo[13] = array('Framed-Compression', 'I');
-        $this->attributesInfo[14] = array('Login-IP-Host', 'A');
-        $this->attributesInfo[15] = array('Login-service', 'I');
-        $this->attributesInfo[16] = array('Login-TCP-Port', 'I');
+        $this->attributesInfo     = [];
+        $this->attributesInfo[RadiusAttributes::USER_NAME]  = array('User-Name', 'S');
+        $this->attributesInfo[RadiusAttributes::USER_PASSWORD]  = array('User-Password', 'S');
+        $this->attributesInfo[RadiusAttributes::CHAP_PASSWORD]  = array('CHAP-Password', 'S'); // Type (1) / Length (1) / CHAP Ident (1) / String
+        $this->attributesInfo[RadiusAttributes::NAS_IP_ADDRESS]  = array('NAS-IP-Address', 'A');
+        $this->attributesInfo[RadiusAttributes::NAS_PORT]  = array('NAS-Port', 'I');
+        $this->attributesInfo[RadiusAttributes::SERVICE_TYPE]  = array('Service-Type', 'I');
+        $this->attributesInfo[RadiusAttributes::FRAMED_PROTOCOL]  = array('Framed-Protocol', 'I');
+        $this->attributesInfo[RadiusAttributes::FRAMED_IP_ADDRESS]  = array('Framed-IP-Address', 'A');
+        $this->attributesInfo[RadiusAttributes::FRAMED_IP_NETMASK] = array('Framed-IP-Netmask', 'A');
+        $this->attributesInfo[RadiusAttributes::FRAMED_ROUTING] = array('Framed-Routing', 'I');
+        $this->attributesInfo[RadiusAttributes::FILTER_ID] = array('Filter-Id', 'T');
+        $this->attributesInfo[RadiusAttributes::FRAMED_MTU] = array('Framed-MTU', 'I');
+        $this->attributesInfo[RadiusAttributes::FRAMED_COMPRESSION] = array('Framed-Compression', 'I');
+        $this->attributesInfo[RadiusAttributes::LOGIN_IP_HOST] = array('Login-IP-Host', 'A');
+        $this->attributesInfo[RadiusAttributes::LOGIN_SERVICE] = array('Login-service', 'I');
+        $this->attributesInfo[RadiusAttributes::LOGIN_TCP_PORT] = array('Login-TCP-Port', 'I');
         $this->attributesInfo[17] = array('(unassigned)', '');
-        $this->attributesInfo[18] = array('Reply-Message', 'T');
-        $this->attributesInfo[19] = array('Callback-Number', 'S');
-        $this->attributesInfo[20] = array('Callback-Id', 'S');
+        $this->attributesInfo[RadiusAttributes::REPLY_MESSAGE] = array('Reply-Message', 'T');
+        $this->attributesInfo[RadiusAttributes::CALLBACK_NUMBER] = array('Callback-Number', 'S');
+        $this->attributesInfo[RadiusAttributes::CALLBACK_ID] = array('Callback-Id', 'S');
         $this->attributesInfo[21] = array('(unassigned)', '');
-        $this->attributesInfo[22] = array('Framed-Route', 'T');
-        $this->attributesInfo[23] = array('Framed-IPX-Network', 'I');
-        $this->attributesInfo[24] = array('State', 'S');
-        $this->attributesInfo[25] = array('Class', 'S');
-        $this->attributesInfo[26] = array('Vendor-Specific', 'S'); // Type (1) / Length (1) / Vendor-Id (4) / Vendor type (1) / Vendor length (1) / Attribute-Specific...
-        $this->attributesInfo[27] = array('Session-Timeout', 'I');
-        $this->attributesInfo[28] = array('Idle-Timeout', 'I');
-        $this->attributesInfo[29] = array('Termination-Action', 'I');
-        $this->attributesInfo[30] = array('Called-Station-Id', 'S');
-        $this->attributesInfo[31] = array('Calling-Station-Id', 'S');
-        $this->attributesInfo[32] = array('NAS-Identifier', 'S');
-        $this->attributesInfo[33] = array('Proxy-State', 'S');
-        $this->attributesInfo[34] = array('Login-LAT-Service', 'S');
-        $this->attributesInfo[35] = array('Login-LAT-Node', 'S');
-        $this->attributesInfo[36] = array('Login-LAT-Group', 'S');
-        $this->attributesInfo[37] = array('Framed-AppleTalk-Link', 'I');
-        $this->attributesInfo[38] = array('Framed-AppleTalk-Network', 'I');
-        $this->attributesInfo[39] = array('Framed-AppleTalk-Zone', 'S');
-        $this->attributesInfo[60] = array('CHAP-Challenge', 'S');
-        $this->attributesInfo[61] = array('NAS-Port-Type', 'I');
-        $this->attributesInfo[62] = array('Port-Limit', 'I');
-        $this->attributesInfo[63] = array('Login-LAT-Port', 'S');
-        $this->attributesInfo[76] = array('Prompt', 'I');
-        $this->attributesInfo[79] = array('EAP-Message', 'S');
-        $this->attributesInfo[80] = array('Message-Authenticator', 'S');
+        $this->attributesInfo[RadiusAttributes::FRAMED_ROUTE] = array('Framed-Route', 'T');
+        $this->attributesInfo[RadiusAttributes::FRAMED_IPX_NETWORK] = array('Framed-IPX-Network', 'I');
+        $this->attributesInfo[RadiusAttributes::STATE] = array('State', 'S');
+        $this->attributesInfo[RadiusAttributes::RADIUS_CLASS] = array('Class', 'S');
+        $this->attributesInfo[RadiusAttributes::VENDOR_SPECIFIC] = array('Vendor-Specific', 'S'); // Type (1) / Length (1) / Vendor-Id (4) / Vendor type (1) / Vendor length (1) / Attribute-Specific...
+        $this->attributesInfo[RadiusAttributes::SESSION_TIMEOUT] = array('Session-Timeout', 'I');
+        $this->attributesInfo[RadiusAttributes::IDLE_TIMEOUT] = array('Idle-Timeout', 'I');
+        $this->attributesInfo[RadiusAttributes::TERMINATION_ACTION] = array('Termination-Action', 'I');
+        $this->attributesInfo[RadiusAttributes::CALLED_STATION_ID] = array('Called-Station-Id', 'S');
+        $this->attributesInfo[RadiusAttributes::CALLING_STATION_ID] = array('Calling-Station-Id', 'S');
+        $this->attributesInfo[RadiusAttributes::NAS_IDENTIFIER] = array('NAS-Identifier', 'S');
+        $this->attributesInfo[RadiusAttributes::PROXY_STATE] = array('Proxy-State', 'S');
+        $this->attributesInfo[RadiusAttributes::LOGIN_LAT_SERVICE] = array('Login-LAT-Service', 'S');
+        $this->attributesInfo[RadiusAttributes::LOGIN_LAT_NODE] = array('Login-LAT-Node', 'S');
+        $this->attributesInfo[RadiusAttributes::LOGIN_LAT_GROUP] = array('Login-LAT-Group', 'S');
+        $this->attributesInfo[RadiusAttributes::FRAMED_APPLETALK_LINK] = array('Framed-AppleTalk-Link', 'I');
+        $this->attributesInfo[RadiusAttributes::FRAMED_APPLETALK_NETWORK] = array('Framed-AppleTalk-Network', 'I');
+        $this->attributesInfo[RadiusAttributes::FRAMED_APPLETALK_ZONE] = array('Framed-AppleTalk-Zone', 'S');
+        $this->attributesInfo[RadiusAttributes::CHAP_CHALLENGE] = array('CHAP-Challenge', 'S');
+        $this->attributesInfo[RadiusAttributes::NAS_PORT_TYPE] = array('NAS-Port-Type', 'I');
+        $this->attributesInfo[RadiusAttributes::PORT_LIMIT] = array('Port-Limit', 'I');
+        $this->attributesInfo[RadiusAttributes::LOGIN_LAT_PORT] = array('Login-LAT-Port', 'S');
+        $this->attributesInfo[RadiusAttributes::PROMPT] = array('Prompt', 'I');
+        $this->attributesInfo[RadiusAttributes::EAP_MESSAGE] = array('EAP-Message', 'S');
+        $this->attributesInfo[RadiusAttributes::MESSAGE_AUTHENTICATOR] = array('Message-Authenticator', 'S');
 
         $this->identifierToSend = -1;
         $this->chapIdentifier   = 1;
@@ -272,9 +272,9 @@ class Radius
     {
         if (0 < $this->errorCode) {
             return $this->errorMessage.' ('.$this->errorCode.')';
-        } else {
-            return '';
-        }
+        } 
+        
+        return '';
     }
 
     /**
@@ -373,7 +373,7 @@ class Radius
         }
 
         $this->username = $username;
-        $this->setAttribute(1, $this->username);
+        $this->setAttribute(RadiusAttributes::USER_NAME, $this->username);
 
         return $this;
     }
@@ -400,7 +400,7 @@ class Radius
         $this->password    = $password;
         $encryptedPassword = $this->getEncryptedPassword($password, $this->getSecret(), $this->getRequestAuthenticator());
 
-        $this->setAttribute(2, $encryptedPassword);
+        $this->setAttribute(RadiusAttributes::USER_PASSWORD, $encryptedPassword);
 
         return $this;
     }
@@ -440,7 +440,7 @@ class Radius
 
             $previous = '';
             for ($j = 0; $j <= 15; ++$j) {
-                $value1 = ord(substr($paddedPassword, ($i * 16) + $j, 1));
+                $value1 = ord($paddedPassword[($i * 16) + $j]);
                 $value2 = hexdec(substr($temp, 2 * $j, 2));
                 $xor_result = $value1 ^ $value2;
                 $previous .= chr($xor_result);
@@ -461,9 +461,9 @@ class Radius
     public function setIncludeMessageAuthenticator($include = true)
     {
         if ($include) {
-            $this->setAttribute(80, str_repeat("\x00", 16));
+            $this->setAttribute(RadiusAttributes::MESSAGE_AUTHENTICATOR, str_repeat("\x00", 16));
         } else {
-            $this->removeAttribute(80);
+            $this->removeAttribute(RadiusAttributes::MESSAGE_AUTHENTICATOR);
         }
 
         return $this;
@@ -507,7 +507,7 @@ class Radius
         $chapId = $this->getChapId();
         $chapMd5 = $this->getChapPassword($password, $chapId, $this->getRequestAuthenticator());
 
-        $this->setAttribute(3, pack('C', $chapId) . $chapMd5);
+        $this->setAttribute(RadiusAttributes::CHAP_PASSWORD, pack('C', $chapId) . $chapMd5);
 
         return $this;
     }
@@ -535,7 +535,7 @@ class Radius
     public function setMsChapPassword($password, $challenge = null)
     {
         $chap = new \Crypt_CHAP_MSv1();
-        $chap->chapid   = mt_rand(1, 255);
+        $chap->chapid   = random_int(1, 255);
         $chap->password = $password;
         if (is_null($challenge)) {
             $chap->generateChallenge();
@@ -574,7 +574,7 @@ class Radius
             $this->nasIpAddress = gethostbyname($hostOrIp);
         }
 
-        $this->setAttribute(4, $this->nasIpAddress);
+        $this->setAttribute(RadiusAttributes::NAS_IP_ADDRESS, $this->nasIpAddress);
 
         return $this;
     }
@@ -597,8 +597,8 @@ class Radius
      */
     public function setNasPort($port = 0)
     {
-        $this->nasPort = intval($port);
-        $this->setAttribute(5, $this->nasPort);
+        $this->nasPort = (int) $port;
+        $this->setAttribute(RadiusAttributes::NAS_PORT, $this->nasPort);
 
         return $this;
     }
@@ -621,8 +621,8 @@ class Radius
      */
     public function setTimeout($timeout = 5)
     {
-        if (intval($timeout) > 0) {
-            $this->timeout = intval($timeout);
+        if ((int) $timeout > 0) {
+            $this->timeout = (int) $timeout;
         }
 
         return $this;
@@ -646,8 +646,8 @@ class Radius
      */
     public function setAuthenticationPort($port)
     {
-        if ((intval($port) > 0) && (intval($port) < 65536)) {
-            $this->authenticationPort = intval($port);
+        if (((int) $port > 0) && ((int) $port < 65536)) {
+            $this->authenticationPort = (int) $port;
         }
 
         return $this;
@@ -671,9 +671,9 @@ class Radius
      */
     public function setAccountingPort($port)
     {
-        if ((intval($port) > 0) && (intval($port) < 65536))
+        if (((int) $port > 0) && ((int) $port < 65536))
         {
-            $this->accountingPort = intval($port);
+            $this->accountingPort = (int) $port;
         }
 
         return $this;
@@ -753,7 +753,7 @@ class Radius
 
         if (is_array($this->attributesReceived)) {
             foreach($this->attributesReceived as $attr) {
-                if (intval($type) == $attr[0]) {
+                if ((int) $type == $attr[0]) {
                     $value = $attr[1];
                     break;
                 }
@@ -772,11 +772,11 @@ class Radius
      */
     public function getRadiusPacketInfo($info_index)
     {
-        if (isset($this->radiusPackets[intval($info_index)])) {
-            return $this->radiusPackets[intval($info_index)];
-        } else {
-            return '';
-        }
+        if (isset($this->radiusPackets[(int) $info_index])) {
+            return $this->radiusPackets[(int) $info_index];
+        } 
+            
+        return '';
     }
 
     /**
@@ -788,11 +788,11 @@ class Radius
      */
     public function getAttributesInfo($info_index)
     {
-        if (isset($this->attributesInfo[intval($info_index)])) {
-            return $this->attributesInfo[intval($info_index)];
-        } else {
-            return array('', '');
-        }
+        if (isset($this->attributesInfo[(int) $info_index])) {
+            return $this->attributesInfo[(int) $info_index];
+        } 
+
+        return array('', '');
     }
 
     /**
@@ -839,9 +839,9 @@ class Radius
                 case 'I':
                     // Integer, 32 bit unsigned value, most significant octet first.
                     $temp = chr($type) . chr(6) .
-                            chr(intval(($value / (256 * 256 * 256))) % 256) .
-                            chr(intval(($value / (256 * 256))) % 256) .
-                            chr(intval(($value / (256))) % 256) .
+                            chr((int) ($value / (256 * 256 * 256)) % 256) .
+                            chr((int) ($value / (256 * 256)) % 256) .
+                            chr((int) ($value / (256)) % 256) .
                             chr($value % 256);
                     break;
                 case 'D':
@@ -884,19 +884,20 @@ class Radius
         if (is_array($this->attributesToSend)) {
             if ($type == null) {
                 return $this->attributesToSend;
-            } else {
-                foreach($this->attributesToSend as $i => $attr) {
-                    if (is_array($attr)) {
-                        $tmp = $attr[0];
-                    } else {
-                        $tmp = $attr;
-                    }
-                    if ($type == ord(substr($tmp, 0, 1))) {
-                        return $this->decodeAttribute(substr($tmp, 2), $type);
-                    }
+            } 
+            
+            foreach($this->attributesToSend as $i => $attr) {
+                if (is_array($attr)) {
+                    $tmp = $attr[0];
+                } else {
+                    $tmp = $attr;
                 }
-                return null;
+                if ($type == ord(substr($tmp, 0, 1))) {
+                    return $this->decodeAttribute(substr($tmp, 2), $type);
+                }
             }
+
+            return null;
         }
 
         return array();
@@ -917,7 +918,7 @@ class Radius
         $data .= chr(2 + strlen($attributeValue));
         $data .= $attributeValue;
 
-        $this->setAttribute(26, $data);
+        $this->setAttribute(RadiusAttributes::VENDOR_SPECIFIC, $data);
 
         return $this;
     }
@@ -965,7 +966,7 @@ class Radius
      */
     public function resetVendorSpecificAttributes()
     {
-        $this->removeAttribute(26);
+        $this->removeAttribute(RadiusAttributes::VENDOR_SPECIFIC);
 
         return $this;
     }
@@ -980,15 +981,17 @@ class Radius
     {
         $result   = array();
         $offset   = 0;
-        $vendorId = (ord(substr($rawValue, 0, 1)) * 256 * 256 * 256) +
-                    (ord(substr($rawValue, 1, 1)) * 256 * 256) +
-                    (ord(substr($rawValue, 2, 1)) * 256) +
-                     ord(substr($rawValue, 3, 1));
+        $vendorId = (ord($rawValue[0]) * 256 * 256 * 256) +
+                    (ord($rawValue[1]) * 256 * 256) +
+                    (ord($rawValue[2]) * 256) +
+                     ord($rawValue[3]);
 
         $offset += 4;
-        while ($offset < strlen($rawValue)) {
-            $vendorType        = (ord(substr($rawValue, 0 + $offset, 1)));
-            $vendorLength      = (ord(substr($rawValue, 1 + $offset, 1)));
+        $len = strlen($rawValue);
+
+        while ($offset < $len) {
+            $vendorType        = (ord($rawValue[$offset]));
+            $vendorLength      = (ord($rawValue[1 + $offset]));
             $attributeSpecific = substr($rawValue, 2 + $offset, $vendorLength);
             $result[]          = array($vendorId, $vendorType, $attributeSpecific);
             $offset           += $vendorLength;
@@ -1021,12 +1024,12 @@ class Radius
         }
 
         if ($state !== null) {
-            $this->setAttribute(24, $state);
+            $this->setAttribute(RadiusAttributes::STATE, $state);
         } else {
-            $this->setAttribute(6, 1); // 1=Login
+            $this->setAttribute(RadiusAttributes::SERVICE_TYPE, 1); // 1=Login
         }
 
-        if (intval($timeout) > 0) {
+        if ((int) $timeout > 0) {
             $this->setTimeout($timeout);
         }
 
@@ -1081,7 +1084,7 @@ class Radius
      * Access-Accept or Access-Reject response.  That is, it will try more than
      * one server in the event of a timeout or other failure.
      *
-     * @see \Dapphp\Radius\Radius::accessRequest()
+     * @see \Seed4Me\RadiusClient\Radius::accessRequest()
      *
      * @param array  $serverList  Array of servers to authenticate against
      * @param string $username    Username to authenticate as
@@ -1113,12 +1116,14 @@ class Radius
 
             if ($result === true) {
                 break; // success
-            } elseif ($this->getErrorCode() === self::TYPE_ACCESS_REJECT) {
+            } 
+            
+            if ($this->getErrorCode() === self::TYPE_ACCESS_REJECT) {
                 break; // access rejected
-            } else {
-                /* timeout or other possible transient error; try next host */
-                $this->attributesToSend = $attributes; // reset base attributes
-            }
+            } 
+
+            /* timeout or other possible transient error; try next host */
+            $this->attributesToSend = $attributes; // reset base attributes
         }
 
         return $result;
@@ -1163,8 +1168,8 @@ class Radius
 
         $this->attributesToSend = $attributes;
         $this->setUsername($username)
-             ->removeAttribute(79)
-             ->setAttribute(79, $eapPacket)
+             ->removeAttribute(RadiusAttributes::EAP_MESSAGE)
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacket)
              ->setIncludeMessageAuthenticator();
 
         $this->accessRequest();
@@ -1179,8 +1184,8 @@ class Radius
             return false;
         }
 
-        $state = $this->getReceivedAttribute(24);
-        $eap   = $this->getReceivedAttribute(79);
+        $state = $this->getReceivedAttribute(RadiusAttributes::STATE);
+        $eap   = $this->getReceivedAttribute(RadiusAttributes::EAP_MESSAGE);
 
         if ($eap == null) {
             $this->errorCode    = 102;
@@ -1202,16 +1207,14 @@ class Radius
 
             $this->attributesToSend = $attributes;
             $this->setUsername($username)
-                 ->setAttribute(79, $eapPacket)
+                 ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacket)
                  ->setIncludeMessageAuthenticator();
 
-            $resp = $this->accessRequest('', '', 0, $state);
-
-            if (!$resp) {
+            if (!$this->accessRequest('', '', 0, $state)) {
                 return false;
             }
 
-            $eap = $this->getReceivedAttribute(79);
+            $eap = $this->getReceivedAttribute(RadiusAttributes::EAP_MESSAGE);
 
             if ($eap == null) {
                 $this->errorCode    = 102;
@@ -1222,7 +1225,7 @@ class Radius
             $eap = EAPPacket::fromString($eap);
         } elseif ($eap->type == EAPPacket::TYPE_MD5_CHALLENGE) {
             // EAP type MD5, PPP CHAP protocol w/ MD5
-            $this->removeAttribute(79)
+            $this->removeAttribute(RadiusAttributes::EAP_MESSAGE)
                 ->setChapPassword($password);
 
             return $this->accessRequest($username);
@@ -1264,7 +1267,7 @@ class Radius
              ->setPacketType(self::TYPE_ACCESS_REQUEST);
         $this->attributesToSend = $attributes;
         $this->setUsername($username)
-             ->setAttribute(79, $eapPacket)
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacket)
              ->setIncludeMessageAuthenticator();
 
         $this->accessRequest('', '', 0, $state);
@@ -1273,7 +1276,7 @@ class Radius
             return false;
         }
 
-        $eap = $this->getReceivedAttribute(79);
+        $eap = $this->getReceivedAttribute(RadiusAttributes::EAP_MESSAGE);
 
         if ($eap == null) {
             $this->errorCode    = 102;
@@ -1332,13 +1335,13 @@ class Radius
 
         // got a success response - send success acknowledgement
         $eapPacket = EAPPacket::eapSuccess($chapId + 1);
-        $state     = $this->getReceivedAttribute(24);
+        $state     = $this->getReceivedAttribute(RadiusAttributes::STATE);
 
         $this->clearDataToSend()
              ->setPacketType(self::TYPE_ACCESS_REQUEST);
         $this->attributesToSend = $attributes;
         $this->setUsername($username)
-             ->setAttribute(79, $eapPacket)
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacket)
              ->setIncludeMessageAuthenticator();
 
         return $this->accessRequest('', '', 0, $state);
@@ -1356,7 +1359,7 @@ class Radius
      */
     public function changePasswordEapMsChapV2($username, $password, $newPassword)
     {
-        $this->removeAttribute(79);
+        $this->removeAttribute(RadiusAttributes::EAP_MESSAGE);
         $attributes = $this->getAttributesToSend();
 
         /*
@@ -1383,8 +1386,8 @@ class Radius
             return false;
         }
 
-        $state = $this->getReceivedAttribute(24);
-        $eap   = $this->getReceivedAttribute(79);
+        $state = $this->getReceivedAttribute(RadiusAttributes::STATE);
+        $eap   = $this->getReceivedAttribute(RadiusAttributes::EAP_MESSAGE);
 
         if ($eap == null) {
             $this->errorCode    = 102;
@@ -1471,9 +1474,9 @@ class Radius
              ->setPacketType(self::TYPE_ACCESS_REQUEST);
         $this->attributesToSend = $attributes;
         $this->setUsername($username)
-             ->setAttribute(79, $eapPacketSplit[0])
-             ->setAttribute(79, $eapPacketSplit[1])
-             ->setAttribute(79, $eapPacketSplit[2])
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacketSplit[0])
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacketSplit[1])
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacketSplit[2])
              ->setIncludeMessageAuthenticator();
 
         $resp = $this->accessRequest('', '', 0, $state);
@@ -1490,7 +1493,7 @@ class Radius
              ->setPacketType(self::TYPE_ACCESS_REQUEST);
         $this->attributesToSend = $attributes;
         $this->setUsername($username)
-             ->setAttribute(79, $eapPacket)
+             ->setAttribute(RadiusAttributes::EAP_MESSAGE, $eapPacket)
              ->setIncludeMessageAuthenticator();
 
         // returns true if password changed successfully
@@ -1501,8 +1504,8 @@ class Radius
      * Perform a EAP-MS-CHAP v2 4-way authentication against a list of servers.
      * Each server must share the same RADIUS secret.
      *
-     * @see \Dapphp\Radius\Radius::accessRequestEapMsChapV2()
-     * @see \Dapphp\Radius\Radius::accessRequestList()
+     * @see \Seed4Me\RadiusClient\Radius::accessRequestEapMsChapV2()
+     * @see \Seed4Me\RadiusClient\Radius::accessRequestList()
      *
      * @param array $serverList Array of servers to authenticate against
      * @param string $username  The username to authenticate as
@@ -1531,12 +1534,14 @@ class Radius
 
             if ($result === true) {
                 break; // success
-            } elseif ($this->getErrorCode() === self::TYPE_ACCESS_REJECT) {
+            } 
+            
+            if ($this->getErrorCode() === self::TYPE_ACCESS_REJECT) {
                 break; // access rejected
-            } else {
-                /* timeout or other possible transient error; try next host */
-                $this->attributesToSend = $attributes; // reset base attributes
-            }
+            } 
+            
+            /* timeout or other possible transient error; try next host */
+            $this->attributesToSend = $attributes; // reset base attributes
         }
 
         return $result;
@@ -1714,16 +1719,15 @@ class Radius
             }
 
             while (strlen($attrContent) > 2) {
-                $attrType     = intval(ord(substr($attrContent, 0, 1)));
-                $attrLength   = intval(ord(substr($attrContent, 1, 1)));
+                $attrType     = intval(ord($attrContent[0]));
+                $attrLength   = intval(ord($attrContent[1]));
                 $attrValueRaw = substr($attrContent, 2, $attrLength - 2);
                 $attrContent  = substr($attrContent, $attrLength);
                 $attrValue    = $this->decodeAttribute($attrValueRaw, $attrType);
 
                 $attr = $this->getAttributesInfo($attrType);
                 if (26 == $attrType) {
-                    $vendorArr = $this->decodeVendorSpecificContent($attrValue);
-                    foreach($vendorArr as $vendor) {
+                    foreach($this->decodeVendorSpecificContent($attrValue) as $vendor) {
                         $this->debugInfo(
                             sprintf(
                                 'Attribute %d (%s), length %d, format %s, Vendor-Id: %d, Vendor-type: %s, Attribute-specific: %s',
@@ -1836,7 +1840,7 @@ class Radius
         $this->requestAuthenticator = '';
 
         for ($c = 0; $c <= 15; ++$c) {
-            $this->requestAuthenticator .= chr(rand(1, 255));
+            $this->requestAuthenticator .= chr(random_int(1, 255));
         }
 
         return $this;
@@ -1905,7 +1909,7 @@ class Radius
             $msg .= $message;
             $msg .= "<br>\n";
 
-            if (php_sapi_name() == 'cli') {
+            if (php_sapi_name() === 'cli') {
                 $msg = strip_tags($msg);
             }
 

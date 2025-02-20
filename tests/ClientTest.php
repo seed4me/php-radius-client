@@ -1,9 +1,9 @@
 <?php
 
-use Dapphp\Radius\Radius;
-use Dapphp\Radius\EAPPacket;
-use Dapphp\Radius\MsChapV2Packet;
-use Dapphp\Radius\VendorId;
+use Seed4Me\RadiusClient\Radius;
+use Seed4Me\RadiusClient\EAPPacket;
+use Seed4Me\RadiusClient\MsChapV2Packet;
+use Seed4Me\RadiusClient\VendorId;
 
 use PHPUnit\Framework\TestCase;
 
@@ -122,8 +122,8 @@ class ClientTest extends TestCase
         $chapChallenge = $client->getAttributesToSend(26);
 
         $vendor = unpack('NID', substr($chapChallenge, 0, 4));
-        $type   = ord(substr($chapChallenge, 4, 1));
-        $length = ord(substr($chapChallenge, 5, 1));
+        $type   = ord($chapChallenge[4]);
+        $length = ord($chapChallenge[5]);
         $data   = substr($chapChallenge, 6, $length);
 
         $this->assertEquals(VendorId::MICROSOFT, $vendor['ID']);
@@ -252,7 +252,7 @@ class ClientTest extends TestCase
     {
         $p = new MsChapV2Packet();
         $p->opcode = MsChapV2Packet::OPCODE_SUCCESS;
-        $s = $p->__toString();
+        $s = (string) $p;
 
         $this->assertEquals("\x03", $s, "MsChapV2Packet success returns 0x03 without error");
 
@@ -264,9 +264,9 @@ class ClientTest extends TestCase
 
         $expected = "016f0016016865726520697320736f6d652064617461";
 
-        $this->assertEquals($expected, bin2hex($p->__toString()));
+        $this->assertEquals($expected, bin2hex((string) $p));
 
-        $parsed = EAPPacket::fromString($p->__toString());
+        $parsed = EAPPacket::fromString((string) $p);
 
         $this->assertEquals(EAPPacket::CODE_REQUEST, $parsed->code);
         $this->assertEquals(111, $parsed->id);
@@ -279,7 +279,7 @@ class ClientTest extends TestCase
         $p2->type = EAPPacket::TYPE_NOTIFICATION;
         $p2->data = "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x99\x98\x97\x96\x95\x94\x93\x92\x91\x90";
 
-        $p3 = EAPPacket::fromString($p2->__toString());
+        $p3 = EAPPacket::fromString((string) $p2);
 
         $this->assertEquals(EAPPacket::CODE_RESPONSE, $p3->code);
         $this->assertEquals(128, $p3->id);

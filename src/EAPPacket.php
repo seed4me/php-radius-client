@@ -1,6 +1,6 @@
 <?php
 
-namespace Dapphp\Radius;
+namespace Seed4Me\RadiusClient;
 
 /**
  * Class for EAP packets encapsulated in RADIUS packets
@@ -22,19 +22,19 @@ class EAPPacket
     const TYPE_PEAP_EAP      = 25;
     const TYPE_EAP_MS_AUTH   = 26;
 
-    public $code;
-    public $id;
-    public $type;
-    public $data;
+    public int $code;
+    public int $id;
+    public int $type;
+    public string $data;
 
     /**
      * Helper function to generate an EAP Identity packet
      *
      * @param string $identity  The identity (username) to send in the packet
-     * @param int $id           The packet ID (random if omitted)
+     * @param int|null $id      The packet ID (random if omitted)
      * @return string An EAP identity packet
      */
-    public static function identity($identity, $id = null)
+    public static function identity(string $identity, ?int $id = null): string
     {
         $packet = new self();
         $packet->setId($id);
@@ -42,17 +42,17 @@ class EAPPacket
         $packet->type = self::TYPE_IDENTITY;
         $packet->data = $identity;
 
-        return $packet->__toString();
+        return (string) $packet;
     }
 
     /**
      * Helper function to generate an EAP Legacy NAK packet
      *
-     * @param string $desiredAuth  The desired auth method
-     * @param int $id              The packet ID, given by server at predecessing proposal
+     * @param int $desiredAuth  The desired auth method
+     * @param int $id           The packet ID, given by server at predecessing proposal
      * @return string An EAP Legacy NAK packet
      */
-    public static function legacyNak($desiredAuth, $id)
+    public static function legacyNak(int $desiredAuth, int $id): string
     {
         $packet = new self();
         $packet->setId($id);
@@ -60,51 +60,48 @@ class EAPPacket
         $packet->type = self::TYPE_NAK;
         $packet->data = chr($desiredAuth);
 
-        return $packet->__toString();
+        return (string) $packet;
     }
 
     /**
      * Helper function to generate an EAP Success packet
      *
-     * @param string $desiredAuth  The identity (username) to send in the packet
-     * @param int $id              The packet ID, given by server at predecessing proposal
-     * @return string An EAP Legacy NAK packet
+     * @param int $id  The packet ID, given by server at predecessing proposal
+     * @return string An EAP Success packet
      */
-    public static function eapSuccess($id)
+    public static function eapSuccess(int $id): string
     {
-		$eapSuccess = new MsChapV2Packet();
-		$eapSuccess->opcode = MsChapV2Packet::OPCODE_SUCCESS;
+        $eapSuccess = new MsChapV2Packet();
+        $eapSuccess->opcode = MsChapV2Packet::OPCODE_SUCCESS;
 
-        $packet = self::mschapv2($eapSuccess, $id);
-
-        return $packet;
+        return  self::mschapv2($eapSuccess, $id);
     }
 
     /**
      * Helper function for sending an MS-CHAP-V2 packet encapsulated in an EAP packet
      *
-     * @param \Dapphp\Radius\MsChapV2Packet $chapPacket The MSCHAP v2 packet to send
-     * @param int $id  The CHAP packet identifier (random if omitted)
+     * @param \Seed4Me\RadiusClient\MsChapV2Packet $chapPacket The MSCHAP v2 packet to send
+     * @param int|null $id  The CHAP packet identifier (random if omitted)
      * @return string An EAP packet with embedded MS-CHAP-V2 packet in the data field
      */
-    public static function mschapv2(\Dapphp\Radius\MsChapV2Packet $chapPacket, $id = null)
+    public static function mschapv2(\Seed4Me\RadiusClient\MsChapV2Packet $chapPacket, ?int $id = null): string
     {
         $packet = new self();
         $packet->setId($id);
         $packet->code = self::CODE_RESPONSE;
         $packet->type = self::TYPE_EAP_MS_AUTH;
-        $packet->data = $chapPacket->__toString();
+        $packet->data = (string) $chapPacket;
 
-        return $packet->__toString();
+        return (string) $packet;
     }
 
     /**
      * Convert a raw EAP packet into a structure
      *
      * @param string $packet The EAP packet
-     * @return \Dapphp\Radius\EAPPacket  The parsed packet structure
+     * @return \Seed4Me\RadiusClient\EAPPacket|false  The parsed packet structure or false on failure
      */
-    public static function fromString($packet)
+    public static function fromString(string $packet): \Seed4Me\RadiusClient\EAPPacket|false
     {
         // TODO: validate incoming packet better
 
@@ -118,7 +115,7 @@ class EAPPacket
             return false;
         }
 
-        $p->type = ord(substr($packet, 4, 1));
+        $p->type = ord($packet[4]);
         $p->data = substr($packet, 5);
 
         return $p;
@@ -126,15 +123,15 @@ class EAPPacket
 
     /**
      * Set the ID of the EAP packet
-     * @param int $id The EAP packet ID
-     * @return \Dapphp\Radius\EAPPacket Fluent interface
+     * @param int|null $id The EAP packet ID
+     * @return \Seed4Me\RadiusClient\EAPPacket Fluent interface
      */
-    public function setId($id = null)
+    public function setId(?int $id = null): \Seed4Me\RadiusClient\EAPPacket
     {
         if (is_null($id)) {
-            $this->id = mt_rand(0, 255);
+            $this->id = random_int(0, 255);
         } else {
-            $this->id = (int)$id;
+            $this->id = (int) $id;
         }
 
         return $this;
@@ -145,7 +142,7 @@ class EAPPacket
      *
      * @return string The packet as a byte string for sending over the wire
      */
-    public function __toString()
+    public function __toString(): string
     {
         return chr($this->code) .
                chr($this->id) .

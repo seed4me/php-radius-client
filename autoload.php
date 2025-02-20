@@ -13,7 +13,7 @@ spl_autoload_register(function($class) {
                 break;
         }
     } elseif (sizeof($parts) > 2) {
-        if ($parts[0] == 'Dapphp' && $parts[1] == 'Radius') {
+        if ($parts[0] == 'Seed4Me' && $parts[1] == 'RadiusClient') {
             require_once __DIR__ . '/src/' . $parts[2] . '.php';
         }
     }
